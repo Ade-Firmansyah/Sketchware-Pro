@@ -2328,6 +2328,16 @@ Please try again later"</string>
     <string name="projects_search">Search projects</string>
     <string name="projects_new">New project</string>
     <string name="projects_title">Projects</string>
+    <string name="editor_auto_save_title">Editor auto save</string>
+    <string name="editor_auto_save_menu">Auto save</string>
+
+    <string-array name="editor_auto_save_intervals">
+        <item>Off</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+    </string-array>
 
     <string-array name="language_names">
         <item>English</item>

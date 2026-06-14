@@ -50,6 +50,17 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
         Cx.a().a(var1);
     }
 
+    private <T extends View> T getCachedItem(String key, Class<T> expectedType) {
+        View cachedItem = f.get(key);
+        if (expectedType.isInstance(cachedItem)) {
+            return expectedType.cast(cachedItem);
+        }
+        if (cachedItem != null) {
+            f.remove(key);
+        }
+        return null;
+    }
+
     private void setupViews() {
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -143,7 +154,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void a(String name, int value) {
-        PropertyColorItem colorItem = (PropertyColorItem) f.get(name);
+        PropertyColorItem colorItem = getCachedItem(name, PropertyColorItem.class);
         if (colorItem == null) {
             colorItem = new PropertyColorItem(getContext(), !b);
             colorItem.setOrientationItem(getOrientation());
@@ -160,7 +171,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void a(String key, int left, int top, int right, int bottom) {
-        PropertyIndentItem indentItem = (PropertyIndentItem) f.get(key);
+        PropertyIndentItem indentItem = getCachedItem(key, PropertyIndentItem.class);
         if (indentItem == null) {
             indentItem = new PropertyIndentItem(getContext(), !b);
             indentItem.setOrientationItem(getOrientation());
@@ -177,7 +188,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void r(String name, String value, int value2) {
-        PropertyColorItem colorItem = (PropertyColorItem) f.get(name);
+        PropertyColorItem colorItem = getCachedItem(name, PropertyColorItem.class);
         if (colorItem == null) {
             colorItem = new PropertyColorItem(getContext(), !b, sc_id);
             colorItem.setOrientationItem(getOrientation());
@@ -193,7 +204,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void a(String key, int value, boolean isEnable) {
-        PropertyMeasureItem measureItem = (PropertyMeasureItem) f.get(key);
+        PropertyMeasureItem measureItem = getCachedItem(key, PropertyMeasureItem.class);
         int isEnabled;
         if (isEnable) {
             isEnabled = 7;
@@ -261,7 +272,8 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void a(String key, String value) {
-        PropertyCustomViewItem propertyCustomViewItem = (PropertyCustomViewItem) f.get(key);
+        PropertyCustomViewItem propertyCustomViewItem =
+                getCachedItem(key, PropertyCustomViewItem.class);
         if (propertyCustomViewItem == null) {
             propertyCustomViewItem = new PropertyCustomViewItem(getContext(), !b);
             propertyCustomViewItem.setOrientationItem(getOrientation());
@@ -277,7 +289,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void a(String key, String value, boolean z, String typeView) {
-        PropertyInputItem inputItem = (PropertyInputItem) f.get(key);
+        PropertyInputItem inputItem = getCachedItem(key, PropertyInputItem.class);
         if (inputItem == null) {
             inputItem = new PropertyInputItem(getContext(), !z);
             inputItem.setOrientationItem(getOrientation());
@@ -315,7 +327,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void b(String key, int value) {
-        PropertyGravityItem gravityItem = (PropertyGravityItem) f.get(key);
+        PropertyGravityItem gravityItem = getCachedItem(key, PropertyGravityItem.class);
         if (gravityItem == null) {
             gravityItem = new PropertyGravityItem(getContext(), !b);
             gravityItem.setOrientationItem(getOrientation());
@@ -340,7 +352,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void b(String key, String value, boolean z) {
-        PropertyResourceItem drawableItem = (PropertyResourceItem) f.get(key);
+        PropertyResourceItem drawableItem = getCachedItem(key, PropertyResourceItem.class);
         if (drawableItem == null) {
             drawableItem = new PropertyResourceItem(getContext(), !b, sc_id, z);
             drawableItem.setOrientationItem(getOrientation());
@@ -370,7 +382,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void c(String key, int value) {
-        PropertySelectorItem selectorItem = (PropertySelectorItem) f.get(key);
+        PropertySelectorItem selectorItem = getCachedItem(key, PropertySelectorItem.class);
         if (selectorItem == null) {
             selectorItem = new PropertySelectorItem(getContext(), !b);
             selectorItem.setOrientationItem(getOrientation());
@@ -387,7 +399,8 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void c(String key, String value) {
-        PropertyStringPairSelectorItem pairSelectorItem = (PropertyStringPairSelectorItem) f.get(key);
+        PropertyStringPairSelectorItem pairSelectorItem =
+                getCachedItem(key, PropertyStringPairSelectorItem.class);
         if (pairSelectorItem == null) {
             pairSelectorItem = new PropertyStringPairSelectorItem(getContext(), !b);
             pairSelectorItem.setOrientationItem(getOrientation());
@@ -440,7 +453,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void d(String key, int value) {
-        PropertySizeItem propertySizeItem = (PropertySizeItem) f.get(key);
+        PropertySizeItem propertySizeItem = getCachedItem(key, PropertySizeItem.class);
         if (propertySizeItem == null) {
             propertySizeItem = new PropertySizeItem(getContext(), !b);
             propertySizeItem.setOrientationItem(getOrientation());
@@ -457,7 +470,8 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void d(String key, String value) {
-        PropertyStringSelectorItem stringSelectorItem = (PropertyStringSelectorItem) f.get(key);
+        PropertyStringSelectorItem stringSelectorItem =
+                getCachedItem(key, PropertyStringSelectorItem.class);
         if (stringSelectorItem == null) {
             stringSelectorItem = new PropertyStringSelectorItem(getContext(), !b);
             stringSelectorItem.setOrientationItem(getOrientation());
@@ -492,7 +506,8 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
     }
 
     private void e(String key, int value) {
-        PropertySwitchSingleLineItem switchSingleLineItem = (PropertySwitchSingleLineItem) f.get(key);
+        PropertySwitchSingleLineItem switchSingleLineItem =
+                getCachedItem(key, PropertySwitchSingleLineItem.class);
         boolean isEnabled = false;
         if (switchSingleLineItem == null) {
             switchSingleLineItem = new PropertySwitchSingleLineItem(getContext(), !b);
@@ -525,7 +540,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
                 ids.add(bean.id);
             }
         }
-        PropertyAttributesItem item = (PropertyAttributesItem) f.get(key);
+        PropertyAttributesItem item = getCachedItem(key, PropertyAttributesItem.class);
         if (item == null) {
             item = new PropertyAttributesItem(getContext(), !b);
             item.setOrientationItem(getOrientation());

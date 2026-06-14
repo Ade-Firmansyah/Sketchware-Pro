@@ -28,12 +28,14 @@ import mod.hey.studios.build.BuildSettings;
 import mod.hey.studios.project.ProjectSettings;
 import mod.hey.studios.util.ProjectFile;
 import mod.hilal.saif.blocks.CommandBlock;
+import mod.jbk.util.LogUtil;
 import mod.pranav.viewbinding.ViewBindingBuilder;
 import pro.sketchware.SketchApplication;
 import pro.sketchware.util.library.BuiltInLibraryManager;
 import pro.sketchware.utility.FileUtil;
 import pro.sketchware.xml.XmlBuilder;
 import pro.sketchware.xml.XmlBuilderHelper;
+import pro.sketchware.utility.layout.LayoutExportValidator;
 
 public class yq {
 
@@ -779,14 +781,28 @@ public class yq {
         for (ProjectFileBean layout : regularLayouts) {
             String xmlName = layout.getXmlName();
             Ox ox = new Ox(N, layout);
-            ox.a(eC.a(projectDataManager.d(xmlName)), projectDataManager.h(xmlName));
+            var layoutViews = LayoutExportValidator.prepareForExport(
+                    xmlName, eC.a(projectDataManager.d(xmlName)));
+            ox.a(layoutViews, projectDataManager.h(xmlName));
+            String generatedXml = CommandBlock.applyCommands(xmlName, ox.b());
             var ogFile = new File(layoutDir + xmlName);
-            if (!layoutFiles.contains(ogFile)) {
-                srcCodeBeans.add(new SrcCodeBean(xmlName, CommandBlock.applyCommands(xmlName, ox.b())));
+            boolean hasCustomOverride = layoutFiles.contains(ogFile);
+            String exportedXml = hasCustomOverride
+                    ? FileUtil.readFile(ogFile.getAbsolutePath())
+                    : generatedXml;
+            LayoutExportValidator.verifyXmlContainsAllViews(
+                    xmlName, exportedXml, layoutViews, hasCustomOverride);
+            LogUtil.d("LayoutExport",
+                    "project=" + sc_id + ", layout=" + xmlName
+                            + ", widgets=" + layoutViews.size()
+                            + ", source=" + (hasCustomOverride ? "custom" : "generated")
+                            + ", validation=passed");
+            if (!hasCustomOverride) {
+                srcCodeBeans.add(new SrcCodeBean(xmlName, generatedXml));
 
                 if (isViewBindingEnable()) {
                     var privFile = new File(context.getCacheDir(), xmlName);
-                    FileUtil.writeFile(privFile.getAbsolutePath(), CommandBlock.applyCommands(xmlName, ox.b()));
+                    FileUtil.writeFile(privFile.getAbsolutePath(), generatedXml);
                     var code = viewBindingBuilder.generateBindingForLayout(privFile);
                     srcCodeBeans.add(new SrcCodeBean(
                             ViewBindingBuilder.generateFileNameForLayout(xmlName.replace(".xml", "")) + ".java",
@@ -800,14 +816,28 @@ public class yq {
         for (ProjectFileBean customViewFile : customViewFiles) {
             String xmlName = customViewFile.getXmlName();
             Ox ox = new Ox(N, customViewFile);
-            ox.a(eC.a(projectDataManager.d(xmlName)));
+            var layoutViews = LayoutExportValidator.prepareForExport(
+                    xmlName, eC.a(projectDataManager.d(xmlName)));
+            ox.a(layoutViews);
+            String generatedXml = CommandBlock.applyCommands(xmlName, ox.b());
             var ogFile = new File(layoutDir + xmlName);
-            if (!layoutFiles.contains(ogFile)) {
-                srcCodeBeans.add(new SrcCodeBean(xmlName, CommandBlock.applyCommands(xmlName, ox.b())));
+            boolean hasCustomOverride = layoutFiles.contains(ogFile);
+            String exportedXml = hasCustomOverride
+                    ? FileUtil.readFile(ogFile.getAbsolutePath())
+                    : generatedXml;
+            LayoutExportValidator.verifyXmlContainsAllViews(
+                    xmlName, exportedXml, layoutViews, hasCustomOverride);
+            LogUtil.d("LayoutExport",
+                    "project=" + sc_id + ", layout=" + xmlName
+                            + ", widgets=" + layoutViews.size()
+                            + ", source=" + (hasCustomOverride ? "custom" : "generated")
+                            + ", validation=passed");
+            if (!hasCustomOverride) {
+                srcCodeBeans.add(new SrcCodeBean(xmlName, generatedXml));
 
                 if (isViewBindingEnable()) {
                     var privFile = new File(context.getCacheDir(), xmlName);
-                    FileUtil.writeFile(privFile.getAbsolutePath(), CommandBlock.applyCommands(xmlName, ox.b()));
+                    FileUtil.writeFile(privFile.getAbsolutePath(), generatedXml);
                     var code = viewBindingBuilder.generateBindingForLayout(privFile);
                     srcCodeBeans.add(new SrcCodeBean(
                             ViewBindingBuilder.generateFileNameForLayout(xmlName.replace(".xml", "")) + ".java",
@@ -924,8 +954,13 @@ public class yq {
                     return new Jx(N, file, projectDataManager).generateCode(isAndroidStudioExport, sc_id);
                 } else if (isXmlFile) {
                     Ox xmlGenerator = new Ox(N, file);
-                    xmlGenerator.a(eC.a(projectDataManager.d(filename)), projectDataManager.h(filename));
-                    return CommandBlock.applyCommands(filename, xmlGenerator.b());
+                    var layoutViews = LayoutExportValidator.prepareForExport(
+                            filename, eC.a(projectDataManager.d(filename)));
+                    xmlGenerator.a(layoutViews, projectDataManager.h(filename));
+                    String xml = CommandBlock.applyCommands(filename, xmlGenerator.b());
+                    LayoutExportValidator.verifyXmlContainsAllViews(
+                            filename, xml, layoutViews, false);
+                    return xml;
                 }
             }
         }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -73,6 +74,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 import a.a.a.DB;
 import a.a.a.GB;
@@ -125,10 +127,19 @@ import pro.sketchware.utility.FileUtil;
 import pro.sketchware.utility.SketchwareUtil;
 import pro.sketchware.utility.ThemeUtils;
 import pro.sketchware.utility.apk.ApkSignatures;
+import pro.sketchware.utility.autosave.EditorAutoSaveManager;
 
 public class DesignActivity extends BaseAppCompatActivity implements View.OnClickListener {
     public static String sc_id;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private final ExecutorService autoSaveExecutor = Executors.newSingleThreadExecutor();
+    private final Runnable autoSaveRunnable = new Runnable() {
+        @Override
+        public void run() {
+            saveRecoverySnapshot();
+            scheduleAutoSave();
+        }
+    };
     private final FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
     private ImageView xmlLayoutOrientation;
     private boolean B;
@@ -197,6 +208,8 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
         }
     });
     private BuildTask currentBuildTask;
+    private boolean buildCancelReceiverRegistered;
+    private volatile boolean projectLoaded;
     private final BroadcastReceiver buildCancelReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -334,6 +347,9 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
 
     @Override
     public void finish() {
+        projectLoaded = false;
+        handler.removeCallbacks(autoSaveRunnable);
+        autoSaveExecutor.shutdownNow();
         jC.a();
         cC.a();
         bC.a();
@@ -398,6 +414,7 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
     }
 
     @Override
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.END)) {
             drawer.closeDrawer(GravityCompat.END);
@@ -485,6 +502,10 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
         bottomMenu.add(Menu.NONE, 1, Menu.NONE, "Build Settings").setOnMenuItemClickListener(item -> {
             BuildSettingsBottomSheet sheet = BuildSettingsBottomSheet.newInstance(sc_id);
             sheet.show(getSupportFragmentManager(), BuildSettingsBottomSheet.TAG);
+            return true;
+        });
+        bottomMenu.add(Menu.NONE, 8, Menu.NONE, R.string.editor_auto_save_menu).setOnMenuItemClickListener(item -> {
+            showAutoSaveDialog();
             return true;
         });
         bottomMenu.add(Menu.NONE, 2, Menu.NONE, "Clean temporary files").setVisible(false).setOnMenuItemClickListener(item -> {
@@ -577,11 +598,13 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
         ((TabLayout) findViewById(R.id.tab_layout)).setupWithViewPager(viewPager);
 
         IntentFilter filter = new IntentFilter(BuildTask.ACTION_CANCEL_BUILD);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(buildCancelReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
-        } else {
-            registerReceiver(buildCancelReceiver, filter);
-        }
+        ContextCompat.registerReceiver(
+                this,
+                buildCancelReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+        );
+        buildCancelReceiverRegistered = true;
 
     }
 
@@ -605,8 +628,13 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
 
     @Override
     public void onDestroy() {
+        handler.removeCallbacks(autoSaveRunnable);
+        autoSaveExecutor.shutdownNow();
+        if (buildCancelReceiverRegistered) {
+            unregisterReceiver(buildCancelReceiver);
+            buildCancelReceiverRegistered = false;
+        }
         super.onDestroy();
-        unregisterReceiver(buildCancelReceiver);
     }
 
     @Override
@@ -669,6 +697,14 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
         if (freeMegabytes < 100L && freeMegabytes > 0L) {
             warnAboutInsufficientStorageSpace();
         }
+        scheduleAutoSave();
+    }
+
+    @Override
+    public void onPause() {
+        handler.removeCallbacks(autoSaveRunnable);
+        saveRecoverySnapshot();
+        super.onPause();
     }
 
     @Override
@@ -693,6 +729,90 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
             } else {
                 showAvailableJavaFiles();
             }
+        }
+    }
+
+    private void scheduleAutoSave() {
+        handler.removeCallbacks(autoSaveRunnable);
+        long interval = EditorAutoSaveManager.getInterval(this);
+        if (interval > EditorAutoSaveManager.OFF && projectLoaded && !isFinishing()) {
+            handler.postDelayed(autoSaveRunnable, interval);
+        }
+    }
+
+    private void saveRecoverySnapshot() {
+        if (!projectLoaded || sc_id == null || autoSaveExecutor.isShutdown()
+                || isBuildRunning()) {
+            return;
+        }
+        try {
+            autoSaveExecutor.execute(() -> {
+                try {
+                    eC dataManager = jC.a(sc_id);
+                    synchronized (dataManager) {
+                        dataManager.k();
+                    }
+                } catch (RuntimeException exception) {
+                    LogUtil.e("DesignActivity", "Failed to save editor recovery snapshot", exception);
+                }
+            });
+        } catch (RejectedExecutionException ignored) {
+            // The Activity is already finishing and no further snapshot is needed.
+        }
+    }
+
+    private boolean isBuildRunning() {
+        return currentBuildTask != null
+                && !currentBuildTask.canceled
+                && !currentBuildTask.isBuildFinished;
+    }
+
+    private void showAutoSaveDialog() {
+        String[] labels = getResources().getStringArray(R.array.editor_auto_save_intervals);
+        long[] values = {
+                EditorAutoSaveManager.OFF,
+                EditorAutoSaveManager.THIRTY_SECONDS,
+                EditorAutoSaveManager.ONE_MINUTE,
+                EditorAutoSaveManager.THREE_MINUTES,
+                EditorAutoSaveManager.FIVE_MINUTES
+        };
+        long current = EditorAutoSaveManager.getInterval(this);
+        int checkedItem = 0;
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == current) {
+                checkedItem = i;
+                break;
+            }
+        }
+
+        var dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.editor_auto_save_title)
+                .setSingleChoiceItems(labels, checkedItem, null)
+                .setNegativeButton(R.string.common_word_cancel, null)
+                .create();
+        dialog.setOnShowListener(ignored -> dialog.getListView().setOnItemClickListener(
+                (parent, view, position, id) -> {
+                    EditorAutoSaveManager.setInterval(this, values[position]);
+                    scheduleAutoSave();
+                    dialog.dismiss();
+                }));
+        dialog.show();
+    }
+
+    private void persistProjectForBuild() {
+        synchronized (jC.class) {
+            eC dataManager = jC.a(sc_id);
+            jC.d(sc_id).a();
+            jC.b(sc_id).m();
+            synchronized (dataManager) {
+                dataManager.j();
+            }
+            jC.d(sc_id).x();
+            jC.c(sc_id).l();
+            jC.d(sc_id).f();
+            jC.d(sc_id).g();
+            jC.d(sc_id).e();
+            saveVersionCodeInformationToProject();
         }
     }
 
@@ -1073,6 +1193,8 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
 
             activity.runOnUiThread(() -> {
                 updateRunButton(true);
+                activity.handler.removeCallbacks(activity.autoSaveRunnable);
+                activity.setTouchEventEnabled(false);
                 activity.r.a("P1I10", true);
                 activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -1087,6 +1209,11 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
             try {
                 var q = activity.q;
                 var sc_id = DesignActivity.sc_id;
+                onProgress("Saving project snapshot...", 0);
+                activity.persistProjectForBuild();
+                if (canceled) {
+                    return;
+                }
                 onProgress("Deleting temporary files...", 1);
                 FileUtil.deleteFile(q.projectMyscPath);
 
@@ -1267,6 +1394,8 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
                         isShowingNotification = false;
                     }
                     updateRunButton(false);
+                    activity.setTouchEventEnabled(true);
+                    activity.scheduleAutoSave();
                     activity.updateBottomMenu();
                     activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 }
@@ -1374,9 +1503,11 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
             if (activity != null) {
                 activity.loadProject(savedInstanceState != null);
                 activity.runOnUiThread(() -> {
+                    activity.projectLoaded = true;
                     activity.updateBottomMenu();
                     activity.refresh();
                     activity.h();
+                    activity.scheduleAutoSave();
                     if (savedInstanceState == null) {
                         activity.checkForUnsavedProjectData();
                     }
