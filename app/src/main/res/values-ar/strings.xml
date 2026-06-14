@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_word_settings">الإعدادات</string>
+    <string name="main_drawer_title_system_settings">إعدادات النظام</string>
+    <string name="settings_managers">أدوات الإدارة</string>
+    <string name="settings_general">عام</string>
+    <string name="settings_app">إعدادات التطبيق</string>
+    <string name="settings_app_description">تغيير إعدادات التطبيق العامة</string>
+    <string name="settings_appearance">المظهر</string>
+    <string name="settings_appearance_description">تغيير مظهر Sketchware</string>
+    <string name="settings_appearance_title">إعدادات السمة</string>
+    <string name="settings_appearance_theme_system">إعداد النظام</string>
+    <string name="settings_appearance_theme_system_description">استخدام سمة النظام</string>
+    <string name="settings_appearance_theme_light">السمة الفاتحة</string>
+    <string name="settings_appearance_theme_dark">السمة الداكنة</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_language_description">تغيير لغة عرض التطبيق</string>
+    <string name="settings_language_help">اختر لغة. سيتم تحديث الواجهة فورًا وسيبقى اختيارك محفوظًا بعد إعادة التشغيل.</string>
+    <string name="settings_working_directory">فتح مجلد العمل</string>
+    <string name="settings_sign_apk">توقيع APK باستخدام testkey</string>
+    <string name="settings_system_description">الحفظ التلقائي والاهتزاز</string>
+    <string name="drawer_about_team">حول الفريق</string>
+    <string name="drawer_changelog">سجل التغييرات</string>
+    <string name="drawer_app_information">معلومات التطبيق</string>
+    <string name="drawer_create_keystore">إنشاء keystore</string>
+    <string name="drawer_apps">التطبيقات</string>
+    <string name="drawer_related_links">روابط ذات صلة</string>
+    <string name="projects_search">البحث في المشاريع</string>
+    <string name="projects_new">مشروع جديد</string>
+    <string name="projects_title">المشاريع</string>
+</resources>

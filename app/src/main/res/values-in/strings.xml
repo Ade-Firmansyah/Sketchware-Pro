@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_word_settings">Pengaturan</string>
+    <string name="main_drawer_title_system_settings">Pengaturan Sistem</string>
+    <string name="settings_managers">Pengelola</string>
+    <string name="settings_general">Umum</string>
+    <string name="settings_block_manager">Pengelola blok</string>
+    <string name="settings_block_manager_description">Kelola blok khusus untuk Editor Logika</string>
+    <string name="settings_block_selector_manager">Pengelola menu pemilih blok</string>
+    <string name="settings_block_selector_manager_description">Kelola menu pemilih blok khusus</string>
+    <string name="settings_component_manager">Pengelola komponen</string>
+    <string name="settings_component_manager_description">Kelola komponen khusus</string>
+    <string name="settings_event_manager">Pengelola event</string>
+    <string name="settings_event_manager_description">Kelola event khusus</string>
+    <string name="settings_local_library_manager">Pengelola library lokal</string>
+    <string name="settings_local_library_manager_description">Kelola dan unduh library lokal</string>
+    <string name="settings_app">Pengaturan aplikasi</string>
+    <string name="settings_app_description">Ubah pengaturan umum aplikasi</string>
+    <string name="settings_appearance">Tampilan</string>
+    <string name="settings_appearance_description">Ubah tampilan Sketchware</string>
+    <string name="settings_appearance_title">Pengaturan tema</string>
+    <string name="settings_appearance_theme_system">Default sistem</string>
+    <string name="settings_appearance_theme_system_description">Ikuti pengaturan tema sistem</string>
+    <string name="settings_appearance_theme_light">Tema terang</string>
+    <string name="settings_appearance_theme_dark">Tema gelap</string>
+    <string name="settings_language">Bahasa</string>
+    <string name="settings_language_description">Ubah bahasa tampilan aplikasi</string>
+    <string name="settings_language_help">Pilih bahasa. Tampilan akan dimuat ulang langsung dan pilihan tetap tersimpan setelah aplikasi dimulai ulang.</string>
+    <string name="settings_working_directory">Buka direktori kerja</string>
+    <string name="settings_working_directory_description">Buka direktori Sketchware dan edit filenya</string>
+    <string name="settings_sign_apk">Tandatangani APK dengan testkey</string>
+    <string name="settings_sign_apk_description">Tandatangani APK dengan testkey dan skema tanda tangan hingga V4</string>
+    <string name="settings_system_description">Preferensi simpan otomatis dan getaran</string>
+    <string name="drawer_about_team">Tentang tim</string>
+    <string name="drawer_changelog">Catatan perubahan</string>
+    <string name="drawer_app_information">Informasi aplikasi</string>
+    <string name="drawer_create_keystore">Buat keystore</string>
+    <string name="drawer_apps">Aplikasi</string>
+    <string name="drawer_related_links">Tautan terkait</string>
+    <string name="projects_search">Cari project</string>
+    <string name="projects_new">Project baru</string>
+    <string name="projects_title">Project</string>
+</resources>

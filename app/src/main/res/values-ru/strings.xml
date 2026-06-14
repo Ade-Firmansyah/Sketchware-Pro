@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_word_settings">Настройки</string>
+    <string name="main_drawer_title_system_settings">Системные настройки</string>
+    <string name="settings_managers">Менеджеры</string>
+    <string name="settings_general">Общие</string>
+    <string name="settings_app">Настройки приложения</string>
+    <string name="settings_app_description">Изменить общие настройки приложения</string>
+    <string name="settings_appearance">Внешний вид</string>
+    <string name="settings_appearance_description">Изменить внешний вид Sketchware</string>
+    <string name="settings_appearance_title">Настройки темы</string>
+    <string name="settings_appearance_theme_system">Системная тема</string>
+    <string name="settings_appearance_theme_system_description">Использовать тему системы</string>
+    <string name="settings_appearance_theme_light">Светлая тема</string>
+    <string name="settings_appearance_theme_dark">Тёмная тема</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_language_description">Изменить язык приложения</string>
+    <string name="settings_language_help">Выберите язык. Интерфейс обновится сразу, а выбор сохранится после перезапуска.</string>
+    <string name="settings_working_directory">Открыть рабочую папку</string>
+    <string name="settings_sign_apk">Подписать APK с testkey</string>
+    <string name="settings_system_description">Автосохранение и вибрация</string>
+    <string name="drawer_about_team">О команде</string>
+    <string name="drawer_changelog">Список изменений</string>
+    <string name="drawer_app_information">О приложении</string>
+    <string name="drawer_create_keystore">Создать keystore</string>
+    <string name="drawer_apps">Приложения</string>
+    <string name="drawer_related_links">Полезные ссылки</string>
+    <string name="projects_search">Поиск проектов</string>
+    <string name="projects_new">Новый проект</string>
+    <string name="projects_title">Проекты</string>
+</resources>

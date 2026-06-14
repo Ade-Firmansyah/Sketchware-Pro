@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_word_settings">Ayarlar</string>
+    <string name="main_drawer_title_system_settings">Sistem ayarları</string>
+    <string name="settings_managers">Yöneticiler</string>
+    <string name="settings_general">Genel</string>
+    <string name="settings_app">Uygulama ayarları</string>
+    <string name="settings_app_description">Genel uygulama ayarlarını değiştir</string>
+    <string name="settings_appearance">Görünüm</string>
+    <string name="settings_appearance_description">Sketchware görünümünü değiştir</string>
+    <string name="settings_appearance_title">Tema ayarları</string>
+    <string name="settings_appearance_theme_system">Sistem varsayılanı</string>
+    <string name="settings_appearance_theme_system_description">Sistem temasını kullan</string>
+    <string name="settings_appearance_theme_light">Açık tema</string>
+    <string name="settings_appearance_theme_dark">Koyu tema</string>
+    <string name="settings_language">Dil</string>
+    <string name="settings_language_description">Uygulama dilini değiştir</string>
+    <string name="settings_language_help">Bir dil seçin. Arayüz hemen yenilenir ve seçim yeniden başlatmadan sonra korunur.</string>
+    <string name="settings_working_directory">Çalışma dizinini aç</string>
+    <string name="settings_sign_apk">APK dosyasını testkey ile imzala</string>
+    <string name="settings_system_description">Otomatik kaydetme ve titreşim</string>
+    <string name="drawer_about_team">Ekip hakkında</string>
+    <string name="drawer_changelog">Değişiklik günlüğü</string>
+    <string name="drawer_app_information">Uygulama bilgisi</string>
+    <string name="drawer_create_keystore">Keystore oluştur</string>
+    <string name="drawer_apps">Uygulamalar</string>
+    <string name="drawer_related_links">İlgili bağlantılar</string>
+    <string name="projects_search">Projelerde ara</string>
+    <string name="projects_new">Yeni proje</string>
+    <string name="projects_title">Projeler</string>
+</resources>

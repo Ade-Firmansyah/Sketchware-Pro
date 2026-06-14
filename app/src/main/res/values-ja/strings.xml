@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_word_settings">設定</string>
+    <string name="main_drawer_title_system_settings">システム設定</string>
+    <string name="settings_managers">管理ツール</string>
+    <string name="settings_general">一般</string>
+    <string name="settings_app">アプリ設定</string>
+    <string name="settings_app_description">一般設定を変更します</string>
+    <string name="settings_appearance">外観</string>
+    <string name="settings_appearance_description">Sketchware の外観を変更します</string>
+    <string name="settings_appearance_title">テーマ設定</string>
+    <string name="settings_appearance_theme_system">システムのデフォルト</string>
+    <string name="settings_appearance_theme_system_description">システムテーマを使用します</string>
+    <string name="settings_appearance_theme_light">ライトテーマ</string>
+    <string name="settings_appearance_theme_dark">ダークテーマ</string>
+    <string name="settings_language">言語</string>
+    <string name="settings_language_description">アプリの表示言語を変更します</string>
+    <string name="settings_language_help">言語を選択してください。画面はすぐに更新され、再起動後も選択が保持されます。</string>
+    <string name="settings_working_directory">作業ディレクトリを開く</string>
+    <string name="settings_sign_apk">testkey で APK に署名</string>
+    <string name="settings_system_description">自動保存とバイブレーション</string>
+    <string name="drawer_about_team">チームについて</string>
+    <string name="drawer_changelog">変更履歴</string>
+    <string name="drawer_app_information">アプリ情報</string>
+    <string name="drawer_create_keystore">Keystore を作成</string>
+    <string name="drawer_apps">アプリ</string>
+    <string name="drawer_related_links">関連リンク</string>
+    <string name="projects_search">プロジェクトを検索</string>
+    <string name="projects_new">新しいプロジェクト</string>
+    <string name="projects_title">プロジェクト</string>
+</resources>

@@ -140,11 +140,15 @@ public class BackupFactory {
         int DEFAULT_BUFFER = 2048;
         try (ZipFile zip = new ZipFile(zipFile)) {
             destinationDir.mkdirs();
+            String destinationPath = destinationDir.getCanonicalPath() + File.separator;
             Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
             while (zipFileEntries.hasMoreElements()) {
                 ZipEntry entry = zipFileEntries.nextElement();
                 String entryName = entry.getName();
                 File destFile = new File(destinationDir, entryName);
+                if (!destFile.getCanonicalPath().startsWith(destinationPath)) {
+                    return false;
+                }
                 File destinationParent = destFile.getParentFile();
                 if (destinationParent != null && !destinationParent.exists()) {
                     destinationParent.mkdirs();
@@ -168,6 +172,62 @@ public class BackupFactory {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Fully reads a backup archive before restore so corrupt and unsafe files are rejected
+     * before any project data is written.
+     *
+     * @return {@code null} when valid, otherwise a user-readable error.
+     */
+    public static String getBackupValidationError(File backupFile) {
+        if (backupFile == null || !backupFile.isFile()) {
+            return "The selected backup file does not exist.";
+        }
+        if (backupFile.length() == 0) {
+            return "The selected backup file is empty.";
+        }
+
+        boolean containsProject = false;
+        byte[] buffer = new byte[8192];
+
+        try (ZipFile zipFile = new ZipFile(backupFile)) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                String normalizedName = entry.getName().replace('\\', '/');
+
+                if (isUnsafeZipEntry(normalizedName)) {
+                    return "The backup contains an unsafe file path.";
+                }
+                if ("project".equals(normalizedName) && !entry.isDirectory()) {
+                    containsProject = true;
+                }
+                if (!entry.isDirectory()) {
+                    try (InputStream input = zipFile.getInputStream(entry)) {
+                        while (input.read(buffer) != -1) {
+                            // Reading every entry verifies its compressed data and CRC.
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return "The backup archive is corrupt or unreadable.";
+        }
+
+        return containsProject ? null : "The backup does not contain project metadata.";
+    }
+
+    private static boolean isUnsafeZipEntry(String entryName) {
+        if (entryName.isEmpty() || entryName.startsWith("/") || entryName.matches("^[A-Za-z]:/.*")) {
+            return true;
+        }
+        for (String segment : entryName.split("/")) {
+            if ("..".equals(segment)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void zipFolder(File srcFolder, File destZipFile) throws Exception {
@@ -462,6 +522,13 @@ public class BackupFactory {
 
         createBackupsFolder();
 
+        String validationError = getBackupValidationError(swbPath);
+        if (validationError != null) {
+            error = validationError;
+            restoreSuccess = false;
+            return;
+        }
+
         // Init temporary restore folder for unzipping
         File outFolder = new File(getBackupDir(),
                 name);
@@ -476,6 +543,7 @@ public class BackupFactory {
         if (!unzip(swbPath, outFolder)) {
             error = "couldn't unzip the backup";
             restoreSuccess = false;
+            FileUtil.deleteFile(outFolder.getAbsolutePath());
             return;
         }
 
@@ -489,6 +557,7 @@ public class BackupFactory {
         if (map == null) {
             error = "couldn't read the project file";
             restoreSuccess = false;
+            FileUtil.deleteFile(outFolder.getAbsolutePath());
             return;
         }
 
@@ -499,6 +568,7 @@ public class BackupFactory {
         if (!writeEncrypted(project, new Gson().toJson(map))) {
             error = "couldn't write to the project file";
             restoreSuccess = false;
+            FileUtil.deleteFile(outFolder.getAbsolutePath());
             return;
         }
 

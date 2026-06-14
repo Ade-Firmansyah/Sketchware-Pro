@@ -32,6 +32,8 @@ public class AboutResponseModel {
 
     public static class TeamMember {
         private String user_username;
+        private String display_name;
+        private String github_username;
         private String description;
         private String user_img;
         private boolean is_core_team;
@@ -39,6 +41,18 @@ public class AboutResponseModel {
 
         public String getMemberUsername() {
             return user_username;
+        }
+
+        public String getDisplayName() {
+            return display_name == null || display_name.isBlank()
+                    ? user_username
+                    : display_name;
+        }
+
+        public String getGithubUsername() {
+            return github_username == null || github_username.isBlank()
+                    ? user_username
+                    : github_username;
         }
 
         public String getMemberImg() {
@@ -58,7 +72,22 @@ public class AboutResponseModel {
         }
 
         public String getDescription() {
-            return description.trim();
+            return description == null ? "" : description.trim();
+        }
+
+        public static TeamMember createContributor(
+                String displayName,
+                String githubUsername,
+                String description
+        ) {
+            TeamMember member = new TeamMember();
+            member.user_username = githubUsername;
+            member.display_name = displayName;
+            member.github_username = githubUsername;
+            member.description = description;
+            member.is_core_team = false;
+            member.is_active = true;
+            return member;
         }
     }
 

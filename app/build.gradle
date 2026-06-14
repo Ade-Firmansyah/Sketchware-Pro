@@ -67,6 +67,12 @@ android {
         buildConfig = true
     }
 
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     configurations.implementation {
         exclude group: 'javax.inject', module: 'javax.inject'
         exclude group: "org.jetbrains.kotlin", module: "kotlin-scripting-compiler-embeddable"

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_word_settings">Impostazioni</string>
+    <string name="main_drawer_title_system_settings">Impostazioni di sistema</string>
+    <string name="settings_managers">Gestori</string>
+    <string name="settings_general">Generali</string>
+    <string name="settings_app">Impostazioni app</string>
+    <string name="settings_app_description">Modifica le impostazioni generali</string>
+    <string name="settings_appearance">Aspetto</string>
+    <string name="settings_appearance_description">Modifica l’aspetto di Sketchware</string>
+    <string name="settings_appearance_title">Impostazioni tema</string>
+    <string name="settings_appearance_theme_system">Predefinito di sistema</string>
+    <string name="settings_appearance_theme_system_description">Usa il tema di sistema</string>
+    <string name="settings_appearance_theme_light">Tema chiaro</string>
+    <string name="settings_appearance_theme_dark">Tema scuro</string>
+    <string name="settings_language">Lingua</string>
+    <string name="settings_language_description">Modifica la lingua dell’app</string>
+    <string name="settings_language_help">Scegli una lingua. L’interfaccia viene aggiornata subito e la scelta resta salvata dopo il riavvio.</string>
+    <string name="settings_working_directory">Apri directory di lavoro</string>
+    <string name="settings_sign_apk">Firma APK con testkey</string>
+    <string name="settings_system_description">Salvataggio automatico e vibrazione</string>
+    <string name="drawer_about_team">Informazioni sul team</string>
+    <string name="drawer_changelog">Registro modifiche</string>
+    <string name="drawer_app_information">Informazioni app</string>
+    <string name="drawer_create_keystore">Crea keystore</string>
+    <string name="drawer_apps">App</string>
+    <string name="drawer_related_links">Link correlati</string>
+    <string name="projects_search">Cerca progetti</string>
+    <string name="projects_new">Nuovo progetto</string>
+    <string name="projects_title">Progetti</string>
+</resources>
