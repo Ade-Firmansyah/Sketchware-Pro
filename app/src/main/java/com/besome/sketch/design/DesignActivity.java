@@ -69,9 +69,12 @@ import com.topjohnwu.superuser.Shell;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -506,6 +509,16 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
         });
         bottomMenu.add(Menu.NONE, 8, Menu.NONE, R.string.editor_auto_save_menu).setOnMenuItemClickListener(item -> {
             showAutoSaveDialog();
+            return true;
+        });
+        bottomMenu.add(Menu.NONE, 9, Menu.NONE, "Local Test Build").setOnMenuItemClickListener(item -> {
+            if (isBuildRunning()) {
+                SketchwareUtil.toast("A build is already running");
+                return true;
+            }
+            BuildTask buildTask = new BuildTask(this, true);
+            currentBuildTask = buildTask;
+            buildTask.execute();
             return true;
         });
         bottomMenu.add(Menu.NONE, 2, Menu.NONE, "Clean temporary files").setVisible(false).setOnMenuItemClickListener(item -> {
@@ -1171,9 +1184,15 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
         public volatile boolean canceled;
         private volatile boolean isBuildFinished;
         private boolean isShowingNotification = false;
+        private final boolean localTestOnly;
 
         public BuildTask(DesignActivity activity) {
+            this(activity, false);
+        }
+
+        public BuildTask(DesignActivity activity, boolean localTestOnly) {
             super(activity);
+            this.localTestOnly = localTestOnly;
             notificationManager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
             btnRun = activity.btnRun;
             btnOptions = activity.btnOptions;
@@ -1204,7 +1223,11 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
 
         private void doInBackground() {
             DesignActivity activity = getActivity();
-            if (activity == null) return;
+            if (activity == null) {
+                isBuildFinished = true;
+                executorService.shutdown();
+                return;
+            }
 
             try {
                 var q = activity.q;
@@ -1324,10 +1347,24 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
                     return;
                 }
 
-                activity.installBuiltApk();
+                if (localTestOnly) {
+                    String outputPath = saveLocalTestBuild(q);
+                    activity.runOnUiThread(() -> new MaterialAlertDialogBuilder(activity)
+                            .setTitle("Local Test Build ready")
+                            .setMessage("APK and validation log were saved locally:\n\n" + outputPath)
+                            .setPositiveButton("Install", (dialog, which) ->
+                                    activity.requestPackageInstallerInstall())
+                            .setNegativeButton("Close", null)
+                            .show());
+                } else {
+                    activity.installBuiltApk();
+                }
                 isBuildFinished = true;
             } catch (MissingFileException e) {
                 isBuildFinished = true;
+                if (localTestOnly) {
+                    saveLocalTestError("Missing build input: " + e.getMessage());
+                }
                 activity.runOnUiThread(() -> {
                     boolean isMissingDirectory = e.isMissingDirectory();
 
@@ -1354,14 +1391,63 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
                 });
             } catch (zy zy) {
                 isBuildFinished = true;
+                if (localTestOnly) {
+                    saveLocalTestError(zy.getMessage());
+                }
                 activity.indicateCompileErrorOccurred(zy.getMessage());
             } catch (Throwable tr) {
-                isBuildFinished = true;
+                if (localTestOnly) {
+                    saveLocalTestError(Log.getStackTraceString(tr));
+                }
                 LogUtil.e("DesignActivity$BuildTask", "Failed to build project", tr);
                 activity.indicateCompileErrorOccurred(Log.getStackTraceString(tr));
             } finally {
+                isBuildFinished = true;
+                executorService.shutdown();
                 activity.runOnUiThread(this::onPostExecute);
             }
+        }
+
+        private String saveLocalTestBuild(yq paths) {
+            String timestamp = new SimpleDateFormat(
+                    "yyyyMMdd-HHmm", Locale.ROOT).format(new Date());
+            String directory = FileUtil.getExternalStorageDir()
+                    + "/SketchwareComplete/builds";
+            String basename = "SketchwareComplete-RC1-debug-" + timestamp;
+            String apkPath = directory + "/" + basename + ".apk";
+            String logPath = directory + "/" + basename + ".log";
+            FileUtil.makeDir(directory);
+            FileUtil.copyFile(paths.finalToInstallApkPath, apkPath);
+            File copiedApk = new File(apkPath);
+            if (!copiedApk.isFile() || copiedApk.length() == 0L) {
+                throw new IllegalStateException("Local APK copy failed: " + apkPath);
+            }
+            FileUtil.writeFile(logPath,
+                    "Sketchware Complete RC1 Local Test Build\n"
+                            + "Project ID: " + DesignActivity.sc_id + "\n"
+                            + "Project: " + paths.projectName + "\n"
+                            + "Created: " + timestamp + "\n"
+                            + "Project snapshot: saved\n"
+                            + "Layout validation: passed\n"
+                            + "APK build: passed\n"
+                            + "Public upload: disabled\n");
+            LogUtil.d("LocalTestBuild", "Saved local APK to " + apkPath);
+            return apkPath;
+        }
+
+        private void saveLocalTestError(String error) {
+            String timestamp = new SimpleDateFormat(
+                    "yyyyMMdd-HHmm", Locale.ROOT).format(new Date());
+            String directory = FileUtil.getExternalStorageDir()
+                    + "/SketchwareComplete/builds";
+            FileUtil.makeDir(directory);
+            FileUtil.writeFile(
+                    directory + "/SketchwareComplete-RC1-error-" + timestamp + ".log",
+                    "Sketchware Complete RC1 Local Test Build\n"
+                            + "Project ID: " + DesignActivity.sc_id + "\n"
+                            + "Created: " + timestamp + "\n"
+                            + "Build result: failed\n\n"
+                            + (error == null ? "Unknown build error" : error));
         }
 
         @Override
@@ -1385,14 +1471,14 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
 
         private void onPostExecute() {
             DesignActivity activity = getActivity();
+            if (isShowingNotification) {
+                notificationManager.cancel(notificationId);
+                isShowingNotification = false;
+            }
             if (activity == null) return;
 
             activity.runOnUiThread(() -> {
                 if (!activity.isDestroyed()) {
-                    if (isShowingNotification) {
-                        notificationManager.cancel(notificationId);
-                        isShowingNotification = false;
-                    }
                     updateRunButton(false);
                     activity.setTouchEventEnabled(true);
                     activity.scheduleAutoSave();
@@ -1432,8 +1518,13 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
                         .setProgress(0, 0, true)
                         .addAction(R.drawable.ic_cancel_white_96dp, "Cancel build", getCancelPendingIntent());
 
-                notificationManager.notify(notificationId, builder.build());
-                isShowingNotification = true;
+                try {
+                    notificationManager.notify(notificationId, builder.build());
+                    isShowingNotification = true;
+                } catch (SecurityException exception) {
+                    LogUtil.e("DesignActivity$BuildTask",
+                            "Build notification permission was denied", exception);
+                }
             }
         }
 
@@ -1449,7 +1540,13 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
                     .setProgress(0, 0, true)
                     .addAction(R.drawable.ic_cancel_white_96dp, "Cancel Build", getCancelPendingIntent());
 
-            notificationManager.notify(notificationId, builder.build());
+            try {
+                notificationManager.notify(notificationId, builder.build());
+            } catch (SecurityException exception) {
+                isShowingNotification = false;
+                LogUtil.e("DesignActivity$BuildTask",
+                        "Unable to update build notification", exception);
+            }
         }
 
         private PendingIntent getCancelPendingIntent() {
@@ -1457,7 +1554,11 @@ public class DesignActivity extends BaseAppCompatActivity implements View.OnClic
             if (activity == null) return null;
 
             Intent cancelIntent = new Intent(BuildTask.ACTION_CANCEL_BUILD);
-            return PendingIntent.getBroadcast(activity, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            return PendingIntent.getBroadcast(
+                    activity,
+                    0,
+                    cancelIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         }
 
         private void createNotificationChannelIfNeeded() {

@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.widget.EditText;
+import androidx.appcompat.widget.AppCompatEditText;
 
 /**
  * A lightweight Code Editor with syntax highlighting, auto indentation, word wrap and lines.
@@ -15,7 +15,7 @@ import android.widget.EditText;
  * @author Hey! Studios DEV - 28.07.2020
  */
 
-public class CodeEditorEditText extends EditText {
+public class CodeEditorEditText extends AppCompatEditText {
 
     private static final int HIGHLIGHTER_COLOR = 0xffefefef;
     private static final boolean LINES = true;
@@ -115,14 +115,18 @@ public class CodeEditorEditText extends EditText {
                 }
             }
 
+            int leftPadding;
             if (lineCount < 100) {
-                setPadding(80, getPaddingTop(), getPaddingRight(), getPaddingBottom());
+                leftPadding = 80;
             } else if (lineCount < 1000) {
-                setPadding(90, getPaddingTop(), getPaddingRight(), getPaddingBottom());
+                leftPadding = 90;
             } else if (lineCount < 10000) {
-                setPadding(100, getPaddingTop(), getPaddingRight(), getPaddingBottom());
-            } else if (lineCount < 100000) {
-                setPadding(110, getPaddingTop(), getPaddingRight(), getPaddingBottom());
+                leftPadding = 100;
+            } else {
+                leftPadding = 110;
+            }
+            if (getPaddingLeft() != leftPadding) {
+                setPadding(leftPadding, getPaddingTop(), getPaddingRight(), getPaddingBottom());
             }
         }
 

@@ -19,6 +19,8 @@
         android:name=".SketchApplication"
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -286,6 +288,13 @@
             android:theme="@style/Theme.SketchwarePro.ProjectPreview" />
 
         <activity android:name="pro.sketchware.activities.settings.SettingsActivity" />
+        <activity
+            android:name="pro.sketchware.ai.ui.AiSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name="pro.sketchware.ai.ui.AiAgentActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity android:name="pro.sketchware.activities.resourceseditor.ResourcesEditorActivity" />
 

@@ -213,6 +213,7 @@ public class ManageViewActivity extends BaseAppCompatActivity implements OnClick
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         if (selecting) {
             a(false);

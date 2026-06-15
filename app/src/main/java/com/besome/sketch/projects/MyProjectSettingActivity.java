@@ -498,6 +498,7 @@ public class MyProjectSettingActivity extends BaseAppCompatActivity implements V
         }
     }
 
+    @android.annotation.SuppressLint("StaticFieldLeak")
     private class SaveProjectAsyncTask extends MA {
 
         public SaveProjectAsyncTask(Context context) {

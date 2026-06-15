@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -26,6 +28,7 @@ import mod.hey.studios.util.Helper;
 import pro.sketchware.R;
 import pro.sketchware.activities.appcompat.ManageAppCompatActivity;
 import pro.sketchware.activities.preview.LayoutPreviewActivity;
+import pro.sketchware.ai.ui.AiAgentLauncher;
 import pro.sketchware.databinding.ViewCodeEditorBinding;
 import pro.sketchware.managers.inject.InjectRootLayoutManager;
 import pro.sketchware.tools.ViewBeanParser;
@@ -49,6 +52,19 @@ public class ViewCodeEditorActivity extends BaseAppCompatActivity {
     private ProjectLibraryBean projectLibrary;
 
     private InjectRootLayoutManager rootLayoutManager;
+    private final ActivityResultLauncher<Intent> aiAgentLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            String proposed = result.getData().getStringExtra(
+                                    AiAgentLauncher.EXTRA_RESULT_CONTENT);
+                            if (proposed != null && !proposed.isBlank()) {
+                                editor.setText(proposed);
+                                SketchwareUtil.toast("AI proposal loaded. Review and save manually.");
+                            }
+                        }
+                    });
 
     private final OnBackPressedCallback onBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -148,6 +164,9 @@ public class ViewCodeEditorActivity extends BaseAppCompatActivity {
         }
         menu.add(Menu.NONE, 4, Menu.NONE, "Reload color schemes");
         menu.add(Menu.NONE, 5, Menu.NONE, "Layout Preview");
+        menu.add(Menu.NONE, 6, Menu.NONE, "AI Agent")
+                .setIcon(AppCompatResources.getDrawable(this, R.drawable.ic_mtrl_code))
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return true;
     }
 
@@ -178,6 +197,10 @@ public class ViewCodeEditorActivity extends BaseAppCompatActivity {
                 toLayoutPreview();
                 return true;
             }
+            case 6 -> {
+                openAiAgent();
+                return true;
+            }
             default -> {
                 return super.onOptionsItemSelected(item);
             }
@@ -196,6 +219,20 @@ public class ViewCodeEditorActivity extends BaseAppCompatActivity {
         intent.putExtras(getIntent());
         intent.putExtra("xml", editor.getText().toString());
         startActivity(intent);
+    }
+
+    private void openAiAgent() {
+        String filename = getIntent().getStringExtra("title");
+        String context = "Project ID: " + sc_id
+                + "\nCurrent layout file: " + filename
+                + "\nCurrent XML:\n" + editor.getText();
+        aiAgentLauncher.launch(AiAgentLauncher.createIntent(
+                this,
+                AiAgentLauncher.MODE_CODE,
+                filename,
+                context,
+                editor.getText().toString(),
+                true));
     }
 
     private void setNote(String note) {

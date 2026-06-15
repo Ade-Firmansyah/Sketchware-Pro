@@ -39,6 +39,7 @@ public class ManageSoundActivity extends BaseAppCompatActivity implements ViewPa
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         if (projectSounds.isSelecting) {
             projectSounds.setSelecting(false);

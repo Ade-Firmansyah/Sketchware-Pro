@@ -45,6 +45,7 @@ import mod.localization.LocaleHelper;
 import pro.sketchware.R;
 import pro.sketchware.activities.editor.component.ManageCustomComponentActivity;
 import pro.sketchware.activities.settings.SettingsActivity;
+import pro.sketchware.ai.ui.AiSettingsActivity;
 import pro.sketchware.databinding.ActivityAppSettingsBinding;
 import pro.sketchware.databinding.DialogSelectApkToSignBinding;
 import pro.sketchware.utility.FileUtil;
@@ -123,6 +124,12 @@ public class AppSettings extends BaseAppCompatActivity {
         generalCategory.addLibraryItem(createPreference(R.drawable.ic_mtrl_settings_applications, getString(R.string.settings_app), getString(R.string.settings_app_description), new ActivityLauncher(new Intent(getApplicationContext(), ConfigActivity.class))), true);
         generalCategory.addLibraryItem(createPreference(R.drawable.ic_mtrl_palette, Helper.getResString(R.string.settings_appearance), Helper.getResString(R.string.settings_appearance_description), openSettingsActivity(SettingsActivity.SETTINGS_APPEARANCE_FRAGMENT)), true);
         generalCategory.addLibraryItem(createPreference(R.drawable.language_48, getString(R.string.settings_language), getString(R.string.settings_language_description), openSettingsActivity(SettingsActivity.SETTINGS_LANGUAGE_FRAGMENT)), true);
+        generalCategory.addLibraryItem(createPreference(
+                R.drawable.ic_mtrl_code,
+                "AI Agent",
+                "Configure providers, API keys, project permissions, models, and debug mode",
+                new ActivityLauncher(new Intent(getApplicationContext(), AiSettingsActivity.class))),
+                true);
         generalCategory.addLibraryItem(createPreference(R.drawable.ic_mtrl_folder, getString(R.string.settings_working_directory), getString(R.string.settings_working_directory_description), v -> openWorkingDirectory()), true);
         generalCategory.addLibraryItem(createPreference(R.drawable.ic_mtrl_apk_document, getString(R.string.settings_sign_apk), getString(R.string.settings_sign_apk_description), v -> signApkFileDialog()), true);
         generalCategory.addLibraryItem(createPreference(R.drawable.ic_mtrl_settings, Helper.getResString(R.string.main_drawer_title_system_settings), getString(R.string.settings_system_description), new ActivityLauncher(new Intent(getApplicationContext(), SystemSettingActivity.class))), false);

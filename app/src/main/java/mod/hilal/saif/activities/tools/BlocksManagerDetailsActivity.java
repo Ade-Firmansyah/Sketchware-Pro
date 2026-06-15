@@ -143,6 +143,7 @@ public class BlocksManagerDetailsActivity extends BaseAppCompatActivity {
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         if (mode.equals("editor")) {
             mode = "normal";

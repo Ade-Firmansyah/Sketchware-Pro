@@ -125,6 +125,7 @@ import mod.pranav.viewbinding.ViewBindingBuilder;
 import pro.sketchware.R;
 import pro.sketchware.activities.editor.view.CodeViewerActivity;
 import pro.sketchware.activities.resourceseditor.ResourcesEditorActivity;
+import pro.sketchware.ai.ui.AiAgentLauncher;
 import pro.sketchware.databinding.ImagePickerItemBinding;
 import pro.sketchware.databinding.SearchWithRecyclerViewBinding;
 import pro.sketchware.menu.ExtraMenuBean;
@@ -133,6 +134,7 @@ import pro.sketchware.utility.SvgUtils;
 
 @SuppressLint({"ClickableViewAccessibility", "RtlHardcoded", "SetTextI18n", "DefaultLocale"})
 public class LogicEditorActivity extends BaseAppCompatActivity implements View.OnClickListener, Vs, View.OnTouchListener, MoreblockImporterDialog.CallBack {
+    private static final int MENU_AI_AGENT = 0xA110;
 
     private final Handler handler = new Handler();
     private final int[] v = new int[2];
@@ -1845,6 +1847,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements View.O
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         if (ia) {
             g(false);
@@ -1907,6 +1910,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements View.O
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingInflatedId")
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.logic_editor);
@@ -1962,6 +1966,9 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements View.O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.logic_menu, menu);
+        menu.add(Menu.NONE, MENU_AI_AGENT, Menu.NONE, "AI Agent")
+                .setIcon(R.drawable.ic_mtrl_code)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         menu.findItem(R.id.menu_logic_redo).setEnabled(M != null && bC.d(scId).g(s()));
         menu.findItem(R.id.menu_logic_undo).setEnabled(M != null && bC.d(scId).h(s()));
         return true;
@@ -1980,9 +1987,29 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements View.O
             undo();
         } else if (itemId == R.id.menu_logic_showsource) {
             showSourceCode();
+        } else if (itemId == MENU_AI_AGENT) {
+            openAiAgent();
         }
 
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    private void openAiAgent() {
+        String javaName = M == null ? "unknown" : M.getJavaName();
+        ArrayList<BlockBean> blocks = M == null
+                ? new ArrayList<>()
+                : jC.a(scId).a(javaName, id + "_" + eventName);
+        String context = "Project ID: " + scId
+                + "\nActivity/source: " + javaName
+                + "\nEvent target: " + id
+                + "\nEvent: " + eventName
+                + "\nCurrent event blocks (structured JSON):\n"
+                + pro.sketchware.utility.GsonUtils.getGson().toJson(blocks);
+        AiAgentLauncher.open(
+                this,
+                AiAgentLauncher.MODE_BLOCKS,
+                javaName + " / " + eventName,
+                context);
     }
 
     @Override

@@ -23,6 +23,7 @@ import mod.hey.studios.util.Helper;
 import mod.jbk.diagnostic.CompileErrorSaver;
 import mod.jbk.util.AddMarginOnApplyWindowInsetsListener;
 import pro.sketchware.databinding.CompileLogBinding;
+import pro.sketchware.ai.ui.AiAgentLauncher;
 import pro.sketchware.utility.SketchwareUtil;
 
 public class CompileLogActivity extends BaseAppCompatActivity {
@@ -34,6 +35,7 @@ public class CompileLogActivity extends BaseAppCompatActivity {
     private SharedPreferences logViewerPreferences;
 
     private CompileLogBinding binding;
+    private String scId;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -56,13 +58,18 @@ public class CompileLogActivity extends BaseAppCompatActivity {
             binding.topAppBar.setTitle("Compile log");
         }
 
-        String sc_id = getIntent().getStringExtra("sc_id");
-        if (sc_id == null) {
+        scId = getIntent().getStringExtra("sc_id");
+        if (scId == null) {
             finish();
             return;
         }
 
-        compileErrorSaver = new CompileErrorSaver(sc_id);
+        compileErrorSaver = new CompileErrorSaver(scId);
+        binding.topAppBar.getMenu().add("AI Fix");
+        binding.topAppBar.setOnMenuItemClickListener(item -> {
+            openAiAgent();
+            return true;
+        });
 
         if (compileErrorSaver.logFileExists()) {
             binding.clearButton.setOnClickListener(v -> {
@@ -127,6 +134,19 @@ public class CompileLogActivity extends BaseAppCompatActivity {
 
         binding.tvCompileLog.setText(CompileLogHelper.getColoredLogs(this, error));
         binding.tvCompileLog.setTextIsSelectable(true);
+    }
+
+    private void openAiAgent() {
+        String log = binding.tvCompileLog.getText() == null
+                ? ""
+                : binding.tvCompileLog.getText().toString();
+        AiAgentLauncher.open(
+                this,
+                AiAgentLauncher.MODE_BUILD,
+                "Build error",
+                "Project ID: " + scId
+                        + "\nBuild diagnostic (secrets are redacted before sending):\n"
+                        + log);
     }
 
     private void applyLogViewerPreferences() {

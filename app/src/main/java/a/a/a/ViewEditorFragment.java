@@ -29,10 +29,12 @@ import java.util.ArrayList;
 
 import mod.hey.studios.util.Helper;
 import pro.sketchware.R;
+import pro.sketchware.ai.ui.AiAgentLauncher;
 import pro.sketchware.utility.SketchwareUtil;
 import pro.sketchware.widgets.WidgetsCreatorManager;
 
 public class ViewEditorFragment extends qA {
+    private static final int MENU_AI_AGENT = 0xA111;
 
     public ViewEditor viewEditor;
     private ProjectFileBean projectFileBean;
@@ -477,6 +479,9 @@ public class ViewEditorFragment extends qA {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         super.onCreateOptionsMenu(menu, menuInflater);
         menuInflater.inflate(R.menu.design_view_menu, menu);
+        menu.add(Menu.NONE, MENU_AI_AGENT, Menu.NONE, "AI Agent")
+                .setIcon(R.drawable.ic_mtrl_code)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         menu.findItem(R.id.menu_view_redo).setEnabled(false);
         menu.findItem(R.id.menu_view_undo).setEnabled(false);
         if (projectFileBean != null) {
@@ -505,8 +510,27 @@ public class ViewEditorFragment extends qA {
             onRedo();
         } else if (itemId == R.id.menu_view_undo) {
             onUndo();
+        } else if (itemId == MENU_AI_AGENT) {
+            openAiAgent();
         }
         return true;
+    }
+
+    private void openAiAgent() {
+        if (projectFileBean == null) {
+            return;
+        }
+        String xmlName = projectFileBean.getXmlName();
+        String context = "Project ID: " + sc_id
+                + "\nCurrent layout: " + xmlName
+                + "\nView hierarchy (structured JSON):\n"
+                + pro.sketchware.utility.GsonUtils.getGson().toJson(
+                        jC.a(sc_id).d(xmlName));
+        AiAgentLauncher.open(
+                requireActivity(),
+                AiAgentLauncher.MODE_VIEW,
+                xmlName,
+                context);
     }
 
     @Override

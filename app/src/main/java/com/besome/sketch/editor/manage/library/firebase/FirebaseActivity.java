@@ -140,6 +140,7 @@ public class FirebaseActivity extends BaseAppCompatActivity implements View.OnCl
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         if (stepNumber > STEP_1) {
             setStep(--stepNumber);

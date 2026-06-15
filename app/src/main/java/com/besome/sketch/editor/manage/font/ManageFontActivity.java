@@ -30,6 +30,7 @@ public class ManageFontActivity extends BaseAppCompatActivity {
     private String sc_id;
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         if (projectFontsFragment.isSelecting) {
             projectFontsFragment.setSelectingMode(false);

@@ -236,8 +236,9 @@ public class AddImageActivity extends BaseDialogActivity implements View.OnClick
 
     private void pickImages(boolean allowMultiple) {
         try {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            intent.setType("image/*");
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setDataAndType(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
             if (allowMultiple) {
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
             }

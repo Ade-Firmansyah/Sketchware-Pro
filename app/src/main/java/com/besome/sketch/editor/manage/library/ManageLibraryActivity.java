@@ -246,6 +246,7 @@ public class ManageLibraryActivity extends BaseAppCompatActivity implements View
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         k();
         try {

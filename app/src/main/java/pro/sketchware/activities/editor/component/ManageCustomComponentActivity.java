@@ -46,6 +46,7 @@ import mod.hey.studios.util.Helper;
 import mod.hilal.saif.components.ComponentsHandler;
 import mod.jbk.util.OldResourceIdMapper;
 import pro.sketchware.R;
+import pro.sketchware.ai.ui.AiAgentLauncher;
 import pro.sketchware.utility.FileUtil;
 import pro.sketchware.utility.SketchwareUtil;
 
@@ -131,6 +132,9 @@ public class ManageCustomComponentActivity extends BaseAppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, 0, 0, "Import");
+        menu.add(0, 1, 1, "AI Agent")
+                .setIcon(R.drawable.ic_mtrl_code)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -138,6 +142,14 @@ public class ManageCustomComponentActivity extends BaseAppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == 0) {
             showFilePickerDialog();
+            return true;
+        } else if (item.getItemId() == 1) {
+            AiAgentLauncher.open(
+                    this,
+                    AiAgentLauncher.MODE_COMPONENT,
+                    "Custom components",
+                    "Current custom component definitions:\n"
+                            + getGson().toJson(componentsList));
             return true;
         }
         return super.onOptionsItemSelected(item);

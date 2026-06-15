@@ -195,8 +195,9 @@ public class AddImageCollectionActivity extends BaseDialogActivity implements Vi
 
     private void pickImage() {
         try {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            intent.setType("image/*");
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setDataAndType(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
             startActivityForResult(Intent.createChooser(intent, getString(R.string.common_word_choose)), 215);
         } catch (ActivityNotFoundException unused) {
             bB.b(this, getString(R.string.common_error_activity_not_found), bB.TOAST_NORMAL).show();
