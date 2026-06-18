@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_word_settings">सेटिंग्स</string>
+    <string name="main_drawer_title_system_settings">सिस्टम सेटिंग्स</string>
+    <string name="settings_managers">प्रबंधक</string>
+    <string name="settings_general">सामान्य</string>
+    <string name="settings_app">ऐप सेटिंग्स</string>
+    <string name="settings_app_description">सामान्य ऐप सेटिंग्स बदलें</string>
+    <string name="settings_appearance">दिखावट</string>
+    <string name="settings_appearance_description">Sketchware की दिखावट बदलें</string>
+    <string name="settings_appearance_title">थीम सेटिंग्स</string>
+    <string name="settings_appearance_theme_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="settings_appearance_theme_system_description">सिस्टम थीम का उपयोग करें</string>
+    <string name="settings_appearance_theme_light">लाइट थीम</string>
+    <string name="settings_appearance_theme_dark">डार्क थीम</string>
+    <string name="settings_language">भाषा</string>
+    <string name="settings_language_description">ऐप की भाषा बदलें</string>
+    <string name="settings_language_help">भाषा चुनें। इंटरफ़ेस तुरंत अपडेट होगा और ऐप दोबारा खोलने पर भी चयन सुरक्षित रहेगा।</string>
+    <string name="settings_working_directory">वर्किंग डायरेक्टरी खोलें</string>
+    <string name="settings_sign_apk">APK को testkey से साइन करें</string>
+    <string name="settings_system_description">ऑटो-सेव और वाइब्रेशन</string>
+    <string name="drawer_about_team">टीम के बारे में</string>
+    <string name="drawer_changelog">बदलाव सूची</string>
+    <string name="drawer_app_information">ऐप की जानकारी</string>
+    <string name="drawer_create_keystore">Keystore बनाएं</string>
+    <string name="drawer_apps">ऐप्स</string>
+    <string name="drawer_related_links">संबंधित लिंक</string>
+    <string name="projects_search">प्रोजेक्ट खोजें</string>
+    <string name="projects_new">नया प्रोजेक्ट</string>
+    <string name="projects_title">प्रोजेक्ट</string>
+</resources>

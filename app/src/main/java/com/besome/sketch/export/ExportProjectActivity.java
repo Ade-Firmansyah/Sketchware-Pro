@@ -23,6 +23,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.security.Security;
 import java.util.ArrayList;
@@ -225,6 +228,7 @@ public class ExportProjectActivity extends BaseAppCompatActivity {
             if (pathNativeLibraries.exists()) {
                 FileUtil.copyDirectory(pathNativeLibraries, new File(project_metadata.generatedFilesPath, "jniLibs"));
             }
+            addAndroidStudioWrapper(new File(project_metadata.projectMyscPath));
 
             ArrayList<String> toCompress = new ArrayList<>();
             toCompress.add(project_metadata.projectMyscPath);
@@ -253,6 +257,39 @@ public class ExportProjectActivity extends BaseAppCompatActivity {
                 export_source_loading_anim.setVisibility(View.GONE);
                 export_source_button.setVisibility(View.VISIBLE);
             });
+        }
+    }
+
+    private void addAndroidStudioWrapper(File projectRoot) throws IOException {
+        copyExportAsset("android_studio_wrapper/gradlew", new File(projectRoot, "gradlew"));
+        copyExportAsset("android_studio_wrapper/gradlew.bat", new File(projectRoot, "gradlew.bat"));
+        copyExportAsset(
+                "android_studio_wrapper/gradle/wrapper/gradle-wrapper.jar",
+                new File(projectRoot, "gradle/wrapper/gradle-wrapper.jar")
+        );
+        copyExportAsset(
+                "android_studio_wrapper/gradle/wrapper/gradle-wrapper.properties",
+                new File(projectRoot, "gradle/wrapper/gradle-wrapper.properties")
+        );
+        FileUtil.writeFile(
+                new File(projectRoot, "local.properties.template").getAbsolutePath(),
+                "# Rename this file to local.properties and set your Android SDK path.\n"
+                        + "# sdk.dir=/absolute/path/to/Android/Sdk\n"
+        );
+    }
+
+    private void copyExportAsset(String assetPath, File destination) throws IOException {
+        File parent = destination.getParentFile();
+        if (parent != null && !parent.exists() && !parent.mkdirs()) {
+            throw new IOException("Could not create " + parent.getAbsolutePath());
+        }
+        try (InputStream input = getAssets().open(assetPath);
+             FileOutputStream output = new FileOutputStream(destination)) {
+            byte[] buffer = new byte[8192];
+            int length;
+            while ((length = input.read(buffer)) != -1) {
+                output.write(buffer, 0, length);
+            }
         }
     }
 

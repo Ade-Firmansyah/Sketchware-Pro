@@ -25,6 +25,24 @@ public class AboutAppViewModel extends ViewModel {
     }
 
     public void setTeamMembers(ArrayList<AboutResponseModel.TeamMember> teamMembers) {
+        if (teamMembers == null) {
+            teamMembers = new ArrayList<>();
+        }
+        boolean hasLotusVolt = false;
+        for (AboutResponseModel.TeamMember member : teamMembers) {
+            if ("Ade-Firmansyah".equalsIgnoreCase(member.getGithubUsername())) {
+                hasLotusVolt = true;
+                break;
+            }
+        }
+        if (!hasLotusVolt) {
+            teamMembers.add(AboutResponseModel.TeamMember.createContributor(
+                    "Ade Firmansyah (LotusVolt)",
+                    "Ade-Firmansyah",
+                    "Sketchware Mod Developer"
+            ));
+        }
+
         ArrayList<AboutResponseModel.TeamMember> coreTeamActive = new ArrayList<>();
         ArrayList<AboutResponseModel.TeamMember> coreTeamInactive = new ArrayList<>();
         ArrayList<AboutResponseModel.TeamMember> activeContributors = new ArrayList<>();

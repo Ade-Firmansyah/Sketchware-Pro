@@ -1,4 +1,5 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation">
     <string name="app_name">Sketchware Pro</string>
     <string name="appbar_scrolling_view_behavior">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
     <string name="besome_blog_url">http://medium.com/sketchware</string>
@@ -2240,7 +2241,7 @@ Please try again later"</string>
     <string name="link_discord_invite">https://discord.gg/kq39yhT4rX</string>
     <string name="link_telegram_invite">https://t.me/sketchwarepro</string>
     <string name="link_about_team">https://sketchware-pro.github.io/Sketchware-Pro/about.json</string>
-    <string name="link_github_commits_url"><![CDATA[https://api.github.com/repos/Sketchware-Pro/Sketchware-Pro/commits?per_page=%s&page=%s]]></string>
+    <string name="link_github_commits_url"><![CDATA[https://api.github.com/repos/Sketchware-Pro/Sketchware-Pro/commits?per_page=%1$s&page=%2$s]]></string>
     <string name="github_api_error_message">Something went wrong. Please wait and try again.</string>
     <string name="github_api_date_unavailable">Date unavailable</string>
     <string name="link_github_url">https://github.com/Sketchware-Pro/Sketchware-Pro</string>
@@ -2293,5 +2294,66 @@ Please try again later"</string>
     <string name="attr_already_exist">This attribute already exists</string>
     <string name="link_sw_assist">https://play.google.com/store/apps/details?id=com.w3wide.swassist</string>
 
+    <!-- Localization foundation. Add new languages by mirroring these keys in values-xx. -->
+    <string name="settings_managers">Managers</string>
+    <string name="settings_general">General</string>
+    <string name="settings_block_manager">Block manager</string>
+    <string name="settings_block_manager_description">Manage custom blocks used in the Logic Editor</string>
+    <string name="settings_block_selector_manager">Block selector menu manager</string>
+    <string name="settings_block_selector_manager_description">Manage custom block selector menus</string>
+    <string name="settings_component_manager">Component manager</string>
+    <string name="settings_component_manager_description">Manage custom components</string>
+    <string name="settings_event_manager">Event manager</string>
+    <string name="settings_event_manager_description">Manage custom events</string>
+    <string name="settings_local_library_manager">Local library manager</string>
+    <string name="settings_local_library_manager_description">Manage and download local libraries</string>
+    <string name="settings_app">App settings</string>
+    <string name="settings_app_description">Change general application settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_description">Change the application display language</string>
+    <string name="settings_language_help">Choose a language. The interface refreshes immediately and your choice is kept after restart.</string>
+    <string name="settings_working_directory">Open working directory</string>
+    <string name="settings_working_directory_description">Open the Sketchware directory and edit its files</string>
+    <string name="settings_sign_apk">Sign an APK with testkey</string>
+    <string name="settings_sign_apk_description">Sign an existing APK with testkey and signature schemes up to V4</string>
+    <string name="settings_system_description">Auto-save and vibration preferences</string>
+    <string name="settings_appearance_title">Theme settings</string>
+    <string name="settings_appearance_theme_system_description">Follow the system theme setting</string>
+    <string name="drawer_about_team">About the team</string>
+    <string name="drawer_changelog">Changelog</string>
+    <string name="drawer_app_information">App information</string>
+    <string name="drawer_create_keystore">Create keystore</string>
+    <string name="drawer_apps">Apps</string>
+    <string name="drawer_related_links">Related links</string>
+    <string name="projects_search">Search projects</string>
+    <string name="projects_new">New project</string>
+    <string name="projects_title">Projects</string>
+    <string name="editor_auto_save_title">Editor auto save</string>
+    <string name="editor_auto_save_menu">Auto save</string>
+
+    <string-array name="editor_auto_save_intervals">
+        <item>Off</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+    </string-array>
+
+    <string-array name="language_names">
+        <item>English</item>
+        <item>Bahasa Indonesia</item>
+        <item>हिन्दी</item>
+        <item>Español</item>
+        <item>Português</item>
+        <item>العربية</item>
+        <item>Русский</item>
+        <item>日本語</item>
+        <item>한국어</item>
+        <item>简体中文</item>
+        <item>Türkçe</item>
+        <item>Deutsch</item>
+        <item>Français</item>
+        <item>Italiano</item>
+    </string-array>
 
 </resources>

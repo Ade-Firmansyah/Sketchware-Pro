@@ -30,6 +30,7 @@ public class AddCustomViewActivity extends BaseDialogActivity implements View.On
     private String presetName;
 
     @Override
+    @SuppressLint("MissingSuperCall")
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manage_screen_custom_view_add);

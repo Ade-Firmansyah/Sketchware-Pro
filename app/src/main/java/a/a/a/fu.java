@@ -112,7 +112,8 @@ public class fu extends qA implements View.OnClickListener {
             }
         }
         if (count > 0) {
-            btnImport.setText(getString(R.string.common_word_import_count, count).toUpperCase());
+            btnImport.setText(getString(
+                    R.string.common_word_import_count, String.valueOf(count)).toUpperCase());
             layoutBtnImport.setVisibility(View.VISIBLE);
         } else {
             layoutBtnImport.setVisibility(View.GONE);

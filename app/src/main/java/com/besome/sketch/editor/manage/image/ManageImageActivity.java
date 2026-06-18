@@ -57,6 +57,7 @@ public class ManageImageActivity extends BaseAppCompatActivity implements ViewPa
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         if (projectImagesFragment.isSelecting) {
             projectImagesFragment.a(false);

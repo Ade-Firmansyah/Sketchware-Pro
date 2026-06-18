@@ -67,6 +67,12 @@ android {
         buildConfig = true
     }
 
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     configurations.implementation {
         exclude group: 'javax.inject', module: 'javax.inject'
         exclude group: "org.jetbrains.kotlin", module: "kotlin-scripting-compiler-embeddable"
@@ -127,13 +133,13 @@ dependencies {
 
 tasks.register('createMockGoogleServices') {
     doLast {
+        def googleServicesFile = file("google-services.json")
         if (secrets != null) {
-            new File("$projectDir/google-services.json").text = secrets
+            googleServicesFile.text = secrets
             return
         }
-        def mockFile = file("src/debug/google-services.json")
-        if (!mockFile.exists()) {
-            mockFile.parentFile.mkdirs()
+
+        if (!googleServicesFile.exists()) {
             def mockContent = """{
   "project_info": {
     "project_number": "123456789000",
@@ -164,7 +170,7 @@ tasks.register('createMockGoogleServices') {
   ],
   "configuration_version": "1"
 }"""
-            mockFile.text = mockContent
+            googleServicesFile.text = mockContent
         }
     }
 }

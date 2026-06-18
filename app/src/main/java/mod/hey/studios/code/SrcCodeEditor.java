@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.besome.sketch.lib.base.BaseAppCompatActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -59,6 +61,7 @@ import mod.jbk.code.CodeEditorColorSchemes;
 import mod.jbk.code.CodeEditorLanguages;
 import pro.sketchware.R;
 import pro.sketchware.activities.preview.LayoutPreviewActivity;
+import pro.sketchware.ai.ui.AiAgentLauncher;
 import pro.sketchware.databinding.CodeEditorHsBinding;
 import pro.sketchware.utility.EditorUtils;
 import pro.sketchware.utility.FileUtil;
@@ -83,6 +86,20 @@ public class SrcCodeEditor extends BaseAppCompatActivity {
     private boolean fromAndroidManifest;
     private String scId;
     private String activityName;
+    private final ActivityResultLauncher<Intent> aiAgentLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            String proposed = result.getData().getStringExtra(
+                                    AiAgentLauncher.EXTRA_RESULT_CONTENT);
+                            if (proposed != null && !proposed.isBlank()) {
+                                binding.editor.setText(proposed);
+                                SketchwareUtil.toast(
+                                        "AI proposal loaded. Review and save manually.");
+                            }
+                        }
+                    });
 
     public static void loadCESettings(Context c, CodeEditor ed, String prefix) {
         loadCESettings(c, ed, prefix, false);
@@ -396,6 +413,9 @@ public class SrcCodeEditor extends BaseAppCompatActivity {
                 toolbarMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "Layout Preview");
             }
             toolbarMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "Find & Replace");
+            toolbarMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "AI Agent")
+                    .setIcon(AppCompatResources.getDrawable(this, R.drawable.ic_mtrl_code))
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             toolbarMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "Word wrap").setCheckable(true).setChecked(local_pref.getBoolean("act_ww", false));
             toolbarMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "Pretty print");
             toolbarMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "Select language");
@@ -467,6 +487,10 @@ public class SrcCodeEditor extends BaseAppCompatActivity {
                         binding.editor.beginSearchMode();
                         break;
 
+                    case "AI Agent":
+                        openAiAgent();
+                        break;
+
                     case "Select theme":
                         showSwitchThemeDialog(this, binding.editor, (dialog, which) -> {
                             selectTheme(binding.editor, which);
@@ -533,5 +557,24 @@ public class SrcCodeEditor extends BaseAppCompatActivity {
         intent.putExtras(getIntent());
         intent.putExtra("xml", binding.editor.getText().toString());
         startActivity(intent);
+    }
+
+    private void openAiAgent() {
+        String title = getIntent().getStringExtra("title");
+        String context = "Project ID: " + (scId == null ? "unknown" : scId)
+                + "\nCurrent source file: " + title
+                + "\nLanguage: " + switch (languageId) {
+                    case 1 -> "Kotlin";
+                    case 2 -> "XML";
+                    default -> "Java";
+                }
+                + "\nCurrent content:\n" + binding.editor.getText();
+        aiAgentLauncher.launch(AiAgentLauncher.createIntent(
+                this,
+                AiAgentLauncher.MODE_CODE,
+                title,
+                context,
+                binding.editor.getText().toString(),
+                true));
     }
 }

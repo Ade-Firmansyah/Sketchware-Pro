@@ -49,7 +49,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
             loadImageFromUrl(holder.binding.imgUserIcon, contributorImg);
         }
 
-        String contributorUsername = member.getMemberUsername();
+        String contributorUsername = member.getDisplayName();
         if (contributorUsername != null) {
             holder.binding.tvUserName.setText(contributorUsername);
         }
@@ -90,7 +90,8 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
         rippleRound(holder.binding.tvStatus, activeBackgroundColor, activeBackgroundColor, 100);
         holder.binding.tvStatus.setTextColor(activeBackgroundTextColor);
 
-        holder.binding.memberLayout.setOnClickListener(view -> openMemberGithubProfile(view.getContext(), member.getMemberUsername()));
+        holder.binding.memberLayout.setOnClickListener(view ->
+                openMemberGithubProfile(view.getContext(), member.getGithubUsername()));
     }
 
     private void openMemberGithubProfile(Context context, String username) {

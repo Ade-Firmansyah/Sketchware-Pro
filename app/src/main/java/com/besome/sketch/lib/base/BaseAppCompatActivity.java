@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import a.a.a.MA;
 import a.a.a.lC;
 import dev.chrisbanes.insetter.Insetter;
+import mod.filepicker.RestorableFilePickerFragmentFactory;
+import mod.localization.LocaleHelper;
 import pro.sketchware.dialogs.ProgressDialog;
 
 public abstract class BaseAppCompatActivity extends AppCompatActivity {
@@ -39,6 +41,11 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
     protected ProgressDialog progressDialog;
     private LoadingDialog lottieDialog;
     private ArrayList<MA> taskList;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.applySavedLocale(newBase));
+    }
 
     public void a(MA var1) {
         taskList.add(var1);
@@ -109,7 +116,15 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        getSupportFragmentManager().setFragmentFactory(
+                new RestorableFilePickerFragmentFactory()
+        );
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            RestorableFilePickerFragmentFactory.removeRestoredFilePickers(
+                    getSupportFragmentManager()
+            );
+        }
         e = getApplicationContext();
         taskList = new ArrayList<>();
         lottieDialog = new LoadingDialog(this);

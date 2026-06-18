@@ -147,6 +147,7 @@ public class PropertyActivity extends BaseAppCompatActivity implements Kw {
     }
 
     @Override
+    @android.annotation.SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         propertyItems.i(viewBean);
         o();

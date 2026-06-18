@@ -1,6 +1,7 @@
 package pro.sketchware.activities.editor.view;
 
 import android.os.Bundle;
+import android.view.Menu;
 
 import androidx.annotation.Nullable;
 
@@ -9,6 +10,7 @@ import com.besome.sketch.lib.base.BaseAppCompatActivity;
 import a.a.a.Lx;
 import mod.hey.studios.util.Helper;
 import pro.sketchware.databinding.ActivityCodeViewerBinding;
+import pro.sketchware.ai.ui.AiAgentLauncher;
 import pro.sketchware.utility.EditorUtils;
 import pro.sketchware.utility.UI;
 
@@ -40,6 +42,18 @@ public class CodeViewerActivity extends BaseAppCompatActivity {
         binding.editor.setEditable(false);
         binding.editor.setWordwrap(false);
         loadColorScheme(scheme);
+        binding.toolbar.getMenu().add(Menu.NONE, Menu.NONE, Menu.NONE, "AI Explain")
+                .setIcon(pro.sketchware.R.drawable.ic_mtrl_code)
+                .setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            AiAgentLauncher.open(
+                    this,
+                    AiAgentLauncher.MODE_CODE,
+                    "Generated " + scheme,
+                    "Project ID: " + scId + "\nGenerated " + scheme + " source:\n"
+                            + binding.editor.getText());
+            return true;
+        });
 
         UI.addSystemWindowInsetToPadding(binding.appBarLayout, true, true, true, false);
         UI.addSystemWindowInsetToMargin(binding.editor, true, false, true, true);

@@ -8,7 +8,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.besome.sketch.lib.base.BaseAppCompatActivity;
@@ -49,6 +49,7 @@ public class LogReaderActivity extends BaseAppCompatActivity {
     private String pkgFilter = "";
     private String packageName = "pro.sketchware";
     private boolean autoScroll = true;
+    private boolean loggerRegistered;
     private ArrayList<String> pkgFilterList = new ArrayList<>();
 
     private ActivityLogcatreaderBinding binding;
@@ -69,11 +70,12 @@ public class LogReaderActivity extends BaseAppCompatActivity {
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("pro.sketchware.ACTION_NEW_DEBUG_LOG");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(logger, intentFilter, Context.RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(logger, intentFilter);
-        }
+        ContextCompat.registerReceiver(
+                this,
+                logger,
+                intentFilter,
+                ContextCompat.RECEIVER_NOT_EXPORTED);
+        loggerRegistered = true;
 
         binding.topAppBar.setNavigationOnClickListener(Helper.getBackPressedClickListener(this));
         binding.topAppBar.setOnMenuItemClickListener(item -> {
@@ -204,8 +206,11 @@ public class LogReaderActivity extends BaseAppCompatActivity {
 
     @Override
     public void onDestroy() {
+        if (loggerRegistered) {
+            unregisterReceiver(logger);
+            loggerRegistered = false;
+        }
         super.onDestroy();
-        unregisterReceiver(logger);
     }
 
     private class Logger extends BroadcastReceiver {
